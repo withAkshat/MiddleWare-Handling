@@ -1,6 +1,8 @@
 const express = require ('express');
 const app = express();
 
+const ExpressError = require("./ExpressError")
+
 app.listen("8080",(req,res)=>{
 console.log("working fine");
 
@@ -15,7 +17,7 @@ const checkToken = (req,res,next)=>{
         next();
     }
     else{
-       throw new Error("ACCESS DENIED")
+       throw new ExpressError(401,"ACCESS DENIED")
     }
 };
 
@@ -51,6 +53,31 @@ app.use("/" ,(req,res,next)=>{
 app.get( "/",(req,res)=>{
     res.send("Hey I am root!")
 } )
+
+
+// Error handling middleware
+
+app.get("/err",(req,res)=>{
+    abcd=abcd;
+})
+
+app.get("/admin",(req,res)=>{
+    throw new ExpressError(403,"Access to admin is forbidden")
+})
+
+app.use((err,req,res,next)=>{       //error Handling Middleware
+    console.log("Error Found");
+    let { status=500 , message="some error found" } = err; 
+    // next(err);
+    res.status(status).send(message);
+})
+
+// app.use((err,req,res,next)=>{
+//     console.log("Error for midddleware 2");
+//     next(err)
+// })
+
+
 
 app.get( "/random",(req,res)=>{
     res.send("Hey I am random request!")
